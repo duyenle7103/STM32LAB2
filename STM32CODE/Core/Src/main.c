@@ -225,6 +225,7 @@ void updateClockBuffer()
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	setTimer1(TIMER1);
 	setTimer2(TIMER2);
 	setTimer3(TIMER3);
   /* USER CODE END 1 */
@@ -256,6 +257,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if (index_led < 0 || index_led >= 4)
+	  {
+		  index_led = 0;
+	  }
+	  update7SEG(index_led);
+	  if (timer1_flag == 1)
+	  {
+		  setTimer1(TIMER1);
+		  index_led++;
+	  }
 	  if (timer2_flag == 1)
 	  {
 		  setTimer2(TIMER2);
@@ -415,20 +426,9 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-int counter1 = TIMER1;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	counter1--;
-	if (index_led < 0 || index_led >= 4)
-	{
-		index_led = 0;
-	}
-	update7SEG(index_led);
-	if (counter1 <= 0)
-	{
-		counter1 = TIMER1;
-		index_led++;
-	}
+	timer1Run();
 	timer2Run();
 	timer3Run();
 }
