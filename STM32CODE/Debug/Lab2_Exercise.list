@@ -91,10 +91,10 @@ void on_light(int led)
  8000152:	6078      	str	r0, [r7, #4]
 	switch (led)
  8000154:	687b      	ldr	r3, [r7, #4]
- 8000156:	2b01      	cmp	r3, #1
+ 8000156:	2b00      	cmp	r3, #0
  8000158:	d10a      	bne.n	8000170 <on_light+0x24>
 	{
-	case 1:
+	case 0:
 		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);
  800015a:	2200      	movs	r2, #0
  800015c:	2140      	movs	r1, #64	; 0x40
@@ -958,8 +958,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		display7SEG(1);
  80006e6:	2001      	movs	r0, #1
  80006e8:	f7ff fd54 	bl	8000194 <display7SEG>
-		on_light(1);
- 80006ec:	2001      	movs	r0, #1
+		on_light(0);
+ 80006ec:	2000      	movs	r0, #0
  80006ee:	f7ff fd2d 	bl	800014c <on_light>
 		if (counter <= 0)
  80006f2:	4b10      	ldr	r3, [pc, #64]	; (8000734 <HAL_TIM_PeriodElapsedCallback+0x68>)
@@ -982,8 +982,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		display7SEG(2);
  8000708:	2002      	movs	r0, #2
  800070a:	f7ff fd43 	bl	8000194 <display7SEG>
-		on_light(2);
- 800070e:	2002      	movs	r0, #2
+		on_light(1);
+ 800070e:	2001      	movs	r0, #1
  8000710:	f7ff fd1c 	bl	800014c <on_light>
 		if (counter <= 0)
  8000714:	4b07      	ldr	r3, [pc, #28]	; (8000734 <HAL_TIM_PeriodElapsedCallback+0x68>)

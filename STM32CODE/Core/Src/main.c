@@ -60,7 +60,7 @@ void on_light(int led)
 {
 	switch (led)
 	{
-	case 1:
+	case 0:
 		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);
 		HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
 		break;
@@ -352,7 +352,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 	case LED1_ON:
 		display7SEG(1);
-		on_light(1);
+		on_light(0);
 		if (counter <= 0)
 		{
 		  counter = TIMER;
@@ -361,7 +361,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		break;
 	default:
 		display7SEG(2);
-		on_light(2);
+		on_light(1);
 		if (counter <= 0)
 		{
 			counter = TIMER;
