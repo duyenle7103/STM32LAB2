@@ -36,7 +36,7 @@ enum state{LED1_ON, LED2_ON, LED3_ON, LED4_ON};
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define TIMER1 50
+#define TIMER1 25
 #define TIMER2 100
 /* USER CODE END PM */
 
