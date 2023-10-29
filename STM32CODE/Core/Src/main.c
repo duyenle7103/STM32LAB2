@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "software_timer.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,7 +36,8 @@ enum state{LED1_ON, LED2_ON, LED3_ON, LED4_ON};
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define TIMER1 50
+#define TIMER2 100
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -198,9 +199,7 @@ void display7SEG(int num)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	enum state current = LED1_ON;
-	setTimer1(50);
-	setTimer2(100);
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -230,49 +229,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  switch (current)
-	  {
-	  case LED1_ON:
-		  display7SEG(1);
-		  on_light(1);
-		  if (timer1_flag == 1)
-		  {
-			  setTimer1(50);
-			  current = LED2_ON;
-		  }
-		  break;
-	  case LED2_ON:
-		  display7SEG(2);
-		  on_light(2);
-		  if (timer1_flag == 1)
-		  {
-			  setTimer1(50);
-			  current = LED3_ON;
-		  }
-		  break;
-	  case LED3_ON:
-		  display7SEG(3);
-		  on_light(3);
-		  if (timer1_flag == 1)
-		  {
-			  setTimer1(50);
-			  current = LED4_ON;
-		  }
-		  break;
-	  default:
-		  display7SEG(0);
-		  on_light(4);
-		  if (timer1_flag == 1)
-		  {
-			  setTimer1(50);
-			  current = LED1_ON;
-		  }
-	  }
-	  if (timer2_flag == 1)
-	  {
-		  setTimer2(100);
-		  HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
-	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -407,10 +363,56 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+int counter1 = TIMER1;
+int counter2 = TIMER2;
+enum state current = LED1_ON;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	timer1Run();
-	timer2Run();
+	counter1--;
+	counter2--;
+	switch (current)
+	{
+	case LED1_ON:
+		display7SEG(1);
+		on_light(1);
+		if (counter1 <= 0)
+		{
+			counter1 = TIMER1;
+			current = LED2_ON;
+		}
+		break;
+	case LED2_ON:
+		display7SEG(2);
+		on_light(2);
+		if (counter1 <= 0)
+		{
+			counter1 = TIMER1;
+			current = LED3_ON;
+		}
+		break;
+	case LED3_ON:
+		display7SEG(3);
+		on_light(3);
+		if (counter1 <= 0)
+		{
+			counter1 = TIMER1;
+			current = LED4_ON;
+		}
+		break;
+	default:
+		display7SEG(0);
+		on_light(4);
+		if (counter1 <= 0)
+		{
+			counter1 = TIMER1;
+			current = LED1_ON;
+		}
+	}
+	if (counter2 <= 0)
+	{
+		counter2 = TIMER2;
+		HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
+	}
 }
 /* USER CODE END 4 */
 
