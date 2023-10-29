@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "software_timer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -38,6 +38,7 @@ enum state{LED1_ON, LED2_ON, LED3_ON, LED4_ON};
 /* USER CODE BEGIN PM */
 #define TIMER1 25
 #define TIMER2 100
+#define TIMER3 100
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -224,7 +225,8 @@ void updateClockBuffer()
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	setTimer2(TIMER2);
+	setTimer3(TIMER3);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -254,23 +256,31 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  second++;
-	  if (second >= 60)
+	  if (timer2_flag == 1)
 	  {
-		  second = 0;
-		  minute++;
+		  setTimer2(TIMER2);
+		  HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
 	  }
-	  if (minute >= 60)
+	  if (timer3_flag == 1)
 	  {
-		  minute = 0;
-		  hour++;
-	  }
-	  if (hour >= 24)
-	  {
-		  hour = 0;
+		  setTimer3(TIMER3);
+		  second++;
+		  if (second >= 60)
+		  {
+			  second = 0;
+			  minute++;
+		  }
+		  if (minute >= 60)
+		  {
+			  minute = 0;
+			  hour++;
+		  }
+		  if (hour >= 24)
+		  {
+			  hour = 0;
+		  }
 	  }
 	  updateClockBuffer();
-	  HAL_Delay(1000) ;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -406,11 +416,9 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 int counter1 = TIMER1;
-int counter2 = TIMER2;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	counter1--;
-	counter2--;
 	if (index_led < 0 || index_led >= 4)
 	{
 		index_led = 0;
@@ -421,11 +429,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		counter1 = TIMER1;
 		index_led++;
 	}
-	if (counter2 <= 0)
-	{
-		counter2 = TIMER2;
-		HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
-	}
+	timer2Run();
+	timer3Run();
 }
 /* USER CODE END 4 */
 
