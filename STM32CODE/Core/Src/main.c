@@ -36,7 +36,7 @@ enum state{LED1_ON, LED2_ON, LED3_ON, LED4_ON};
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define TIMER1 50
+#define TIMER1 25
 #define TIMER2 100
 /* USER CODE END PM */
 
@@ -47,6 +47,7 @@ TIM_HandleTypeDef htim2;
 const int MAX_LED = 4;
 int index_led = 0;
 int led_buffer[4] = {1, 2, 3, 4};
+int hour = 15, minute = 8, second = 50;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -207,6 +208,13 @@ void update7SEG(int index)
 		break;
 	}
 }
+void updateClockBuffer()
+{
+	led_buffer[0] = hour/10;
+	led_buffer[1] = hour%10;
+	led_buffer[2] = minute/10;
+	led_buffer[3] = minute%10;
+}
 /* USER CODE END 0 */
 
 /**
@@ -246,6 +254,23 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  second++;
+	  if (second >= 60)
+	  {
+		  second = 0;
+		  minute++;
+	  }
+	  if (minute >= 60)
+	  {
+		  minute = 0;
+		  hour++;
+	  }
+	  if (hour >= 24)
+	  {
+		  hour = 0;
+	  }
+	  updateClockBuffer();
+	  HAL_Delay(1000) ;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
