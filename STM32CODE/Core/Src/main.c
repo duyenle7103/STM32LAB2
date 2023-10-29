@@ -61,19 +61,19 @@ void on_light(int led)
 {
 	switch (led)
 	{
-	case 1:
+	case 0:
 		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);
 		HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
 		HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
 		HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
 		break;
-	case 2:
+	case 1:
 		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
 		HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, RESET);
 		HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
 		HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
 		break;
-	case 3:
+	case 2:
 		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
 		HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
 		HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, RESET);
@@ -374,7 +374,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 	case LED1_ON:
 		display7SEG(1);
-		on_light(1);
+		on_light(0);
 		if (counter1 <= 0)
 		{
 			counter1 = TIMER1;
@@ -383,7 +383,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		break;
 	case LED2_ON:
 		display7SEG(2);
-		on_light(2);
+		on_light(1);
 		if (counter1 <= 0)
 		{
 			counter1 = TIMER1;
@@ -392,7 +392,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		break;
 	case LED3_ON:
 		display7SEG(3);
-		on_light(3);
+		on_light(2);
 		if (counter1 <= 0)
 		{
 			counter1 = TIMER1;
@@ -401,7 +401,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		break;
 	default:
 		display7SEG(0);
-		on_light(4);
+		on_light(3);
 		if (counter1 <= 0)
 		{
 			counter1 = TIMER1;
