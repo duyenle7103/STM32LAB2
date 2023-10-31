@@ -36,7 +36,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define TIMER4 100
+#define TIMER4 5
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -46,7 +46,15 @@ TIM_HandleTypeDef htim2;
 const int MAX_LED_MATRIX = 8;
 int index_led_matrix = 0;
 uint16_t matrix_row[8] = {0x0018, 0x003C, 0x0066, 0x0066, 0x007E, 0x0066, 0x0066, 0x0066};
-uint16_t matrix_col[8] = {0x0001, 0x0002, 0x0004, 0x0008, 0x000C, 0x0020, 0x0040, 0x0080};
+uint16_t matrix_col[8] = {0x0001, 0x0002, 0x0004, 0x0008, 0x0010, 0x0020, 0x0040, 0x0080};
+
+uint16_t new_row[8] = {0x0018, 0x003C, 0x0066, 0x0066, 0x007E, 0x0066, 0x0066, 0x0066};
+uint16_t new_col[8] = {0x0001, 0x0002, 0x0004, 0x0008, 0x000C, 0x0020, 0x0040, 0x0080};
+
+uint16_t COL[8] = {ENM0_Pin, ENM1_Pin, ENM2_Pin, ENM3_Pin,
+				   ENM4_Pin, ENM5_Pin, ENM6_Pin, ENM7_Pin};
+uint16_t ROW[8] = {ROW0_Pin, ROW1_Pin, ROW2_Pin, ROW3_Pin,
+		           ROW4_Pin, ROW5_Pin, ROW6_Pin, ROW7_Pin};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,24 +67,40 @@ static void MX_TIM2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-//void updateLEDMatrix(int index)
-//{
-//	switch (index)
-//	{
-//	case 0:
-//	case 1:
-//	case 2:
-//	case 3:
-//	case 4:
-//	case 5:
-//	case 6:
-//	case 7:
-//
-//		break;
-//	default:
-//		break;
-//	}
-//}
+void modifyBit()
+{
+	for (int i = 0; i < MAX_LED_MATRIX; i++)
+	{
+		uint16_t sum_row = 0;
+		uint16_t sum_col = 0;
+		for (int j = 0; j < MAX_LED_MATRIX; j++)
+		{
+			sum_row |= ((matrix_row[i] >> j) & 1)*ROW[j];
+			sum_col |= ((matrix_col[i] >> j) & 1)*COL[j];
+		}
+		new_row[i] = sum_row;
+		new_col[i] = sum_col;
+	}
+}
+void updateLEDMatrix(int index)
+{
+	switch (index)
+	{
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+		GPIOA->ODR = ~new_col[index];
+		GPIOB->ODR = ~new_row[index];
+		break;
+	default:
+		break;
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -86,6 +110,7 @@ static void MX_TIM2_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	modifyBit();
 	setTimer4(TIMER4);
   /* USER CODE END 1 */
 
@@ -116,18 +141,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  updateLEDMatrix(index_led_matrix);
-//	  if (timer4_flag == 1)
-//	  {
-//		  setTimer4(TIMER4);
-//		  index_led_matrix++;
-//		  if (index_led_matrix >= 8)
-//		  {
-//			  index_led_matrix = 0;
-//		  }
-//	  }
-	  GPIOA->ODR = 0x32FF;
-	  GPIOB->ODR = 0x0000;
+	  updateLEDMatrix(index_led_matrix);
+	  if (timer4_flag == 1)
+	  {
+		  setTimer4(TIMER4);
+		  index_led_matrix++;
+		  if (index_led_matrix >= MAX_LED_MATRIX)
+		  {
+			  index_led_matrix = 0;
+		  }
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
