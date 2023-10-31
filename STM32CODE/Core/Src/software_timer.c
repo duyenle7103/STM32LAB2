@@ -12,6 +12,8 @@
 
 int timer4_counter = 0;
 int timer4_flag = 0;
+int timer5_counter = 0;
+int timer5_flag = 0;
 
 void setTimer4(int duration)
 {
@@ -24,6 +26,19 @@ void timer4Run()
 	if(timer4_counter <= 0)
 	{
 		timer4_flag = 1;
+	}
+}
+void setTimer5(int duration)
+{
+	timer5_counter = duration;
+	timer5_flag = 0;
+}
+void timer5Run()
+{
+	timer5_counter--;
+	if(timer5_counter <= 0)
+	{
+		timer5_flag = 1;
 	}
 }
 

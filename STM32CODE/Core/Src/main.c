@@ -37,6 +37,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 #define TIMER4 5
+#define TIMER5 100
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -101,6 +102,15 @@ void updateLEDMatrix(int index)
 		break;
 	}
 }
+void animateLED()
+{
+	uint16_t temp = new_row[MAX_LED_MATRIX - 1];
+	for (int i = MAX_LED_MATRIX - 1; i > 0; i--)
+	{
+		new_row[i] = new_row[i - 1];
+	}
+	new_row[0] = temp;
+}
 /* USER CODE END 0 */
 
 /**
@@ -112,6 +122,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
 	modifyBit();
 	setTimer4(TIMER4);
+	setTimer5(TIMER5);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -150,6 +161,11 @@ int main(void)
 		  {
 			  index_led_matrix = 0;
 		  }
+	  }
+	  if (timer5_flag == 1)
+	  {
+		  setTimer5(TIMER5);
+		  animateLED();
 	  }
     /* USER CODE END WHILE */
 
@@ -323,6 +339,7 @@ static void MX_GPIO_Init(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	timer4Run();
+	timer5Run();
 }
 /* USER CODE END 4 */
 
