@@ -39,7 +39,7 @@
 #define TIMER1 25
 #define TIMER2 100
 #define TIMER3 100
-#define TIMER4 100
+#define TIMER4 5
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -53,8 +53,16 @@ int hour = 15, minute = 8, second = 50;
 
 const int MAX_LED_MATRIX = 8;
 int index_led_matrix = 0;
-uint32_t matrix_row[8] = {0x18, 0x3C, 0x66, 0x66, 0x7E, 0x66, 0x66, 0x66};
-uint32_t matrix_col[8] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+uint16_t matrix_row[8] = {0x0018, 0x003C, 0x0066, 0x0066, 0x007E, 0x0066, 0x0066, 0x0066};
+uint16_t matrix_col[8] = {0x0001, 0x0002, 0x0004, 0x0008, 0x0010, 0x0020, 0x0040, 0x0080};
+
+uint16_t new_row[8] = {0x0018, 0x003C, 0x0066, 0x0066, 0x007E, 0x0066, 0x0066, 0x0066};
+uint16_t new_col[8] = {0x0001, 0x0002, 0x0004, 0x0008, 0x000C, 0x0020, 0x0040, 0x0080};
+
+uint16_t COL[8] = {ENM0_Pin, ENM1_Pin, ENM2_Pin, ENM3_Pin,
+				   ENM4_Pin, ENM5_Pin, ENM6_Pin, ENM7_Pin};
+uint16_t ROW[8] = {ROW0_Pin, ROW1_Pin, ROW2_Pin, ROW3_Pin,
+		           ROW4_Pin, ROW5_Pin, ROW6_Pin, ROW7_Pin};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -222,6 +230,21 @@ void updateClockBuffer()
 	led_buffer[2] = minute/10;
 	led_buffer[3] = minute%10;
 }
+void modifyBit()
+{
+	for (int i = 0; i < MAX_LED_MATRIX; i++)
+	{
+		uint16_t sum_row = 0;
+		uint16_t sum_col = 0;
+		for (int j = 0; j < MAX_LED_MATRIX; j++)
+		{
+			sum_row |= ((matrix_row[i] >> j) & 1)*ROW[j];
+			sum_col |= ((matrix_col[i] >> j) & 1)*COL[j];
+		}
+		new_row[i] = sum_row;
+		new_col[i] = sum_col;
+	}
+}
 void updateLEDMatrix(int index)
 {
 	switch (index)
@@ -234,9 +257,8 @@ void updateLEDMatrix(int index)
 	case 5:
 	case 6:
 	case 7:
-	case 8:
-		GPIOC->ODR = matrix_col[index];
-		GPIOD->ODR = matrix_row[index];
+		GPIOA->ODR = ~new_col[index];
+		GPIOB->ODR = ~new_row[index];
 		break;
 	default:
 		break;
@@ -251,6 +273,7 @@ void updateLEDMatrix(int index)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	modifyBit();
 	setTimer1(TIMER1);
 	setTimer2(TIMER2);
 	setTimer3(TIMER3);
@@ -324,7 +347,7 @@ int main(void)
 	  {
 		  setTimer4(TIMER4);
 		  index_led_matrix++;
-		  if (index_led_matrix >= 8)
+		  if (index_led_matrix >= MAX_LED_MATRIX)
 		  {
 			  index_led_matrix = 0;
 		  }
@@ -471,19 +494,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
-	GPIO_InitStruct.Pin = ENM0_Pin|ENM1_Pin|ENM2_Pin|ENM3_Pin
-							|ENM4_Pin|ENM5_Pin|ENM6_Pin|ENM7_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-	GPIO_InitStruct.Pin = ROW0_Pin|ROW1_Pin|ROW2_Pin|ROW3_Pin
-						  |ROW4_Pin|ROW5_Pin|ROW6_Pin|ROW7_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
